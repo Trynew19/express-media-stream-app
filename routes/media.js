@@ -28,6 +28,20 @@ router.get('/:id/stream-url', async (req, res) => {
   res.json({ url, expires_in_seconds: 600 });
 });
 
-
+router.get('/stream', async (req, res) => {
+  const token = req.query.token;
+  if (!token) return res.status(400).json({ error: 'token required' });
+  try {
+    const payload = verifyStreamToken(token);
+    const media = await MediaAsset.findById(payload.media_id);
+    if (!media) return res.status(404).json({ error: 'media not found' });
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+    await MediaViewLog.create({ media_id: media._id, viewed_by_ip: ip });
+    res.redirect(media.file_url);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'invalid or expired token' });
+  }
+});
 
 module.exports = router;
