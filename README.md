@@ -127,3 +127,82 @@ Open the URL from step 4.
 - **Storage**: File URLs are assumed to be externally hosted (e.g., S3, CDN) — API redirects rather than streams directly.
 - **Logging**: View logs store media reference, viewer IP, and timestamp.
 - **DB Choice**: MongoDB for flexible schema and rapid prototyping.
+
+# Analytics Routes README
+
+## Overview
+This module adds analytics capabilities to your media streaming application. It tracks:
+- **Who** is watching (by IP address)
+- **When** they watch (timestamp)
+- **From where** (IP-based analytics)
+
+It also provides aggregated analytics data per media item.
+
+## Features
+1. **Log Views** – Store IP and timestamp for each view.
+2. **Get Analytics** – Fetch total views, unique viewers, and daily view counts.
+3. **JWT-Protected Routes** – Both endpoints require authentication.
+4. **Error Handling** – Covers invalid tokens, missing media, and bad IDs.
+
+## Endpoints
+
+### 1. POST `/media/:id/view`
+**Description:** Logs a view for the specified media item.
+
+**Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Body:**
+```json
+{}
+```
+
+**Example Response:**
+```json
+{
+  "message": "View logged"
+}
+```
+
+### 2. GET `/media/:id/analytics`
+**Description:** Retrieves analytics for the specified media.
+
+**Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Example Response:**
+```json
+{
+  "total_views": 3,
+  "unique_ips": 2,
+  "views_per_day": {
+    "2025-08-13": 2,
+    "2025-08-14": 1
+  }
+}
+```
+
+
+const analyticsRoutes = require('./analyticsRoutes');
+app.use('/analytics', analyticsRoutes);
+
+```
+
+
+
+## Postman Testing
+
+### Log a View
+- **Method:** POST
+- **URL:** `http://localhost:3000/media/<media_id>/view`
+- **Headers:** `Authorization: Bearer <JWT_TOKEN>`
+- **Body:** `{}`
+
+### Get Analytics
+- **Method:** GET
+- **URL:** `http://localhost:3000/media/<media_id>/analytics`
+- **Headers:** `Authorization: Bearer <JWT_TOKEN>`

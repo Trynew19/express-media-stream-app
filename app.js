@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const authRoutes = require('./routes/auth');
 const mediaRoutes = require('./routes/media');
+const analyticsRoutes = require("./routes/analyticsRoutes")
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(bodyParser.json());
 
 app.use('/auth', authRoutes);
 app.use('/media', mediaRoutes);
+app.use('/analytics',analyticsRoutes)
 
 const PORT = process.env.PORT || 3000;
 
